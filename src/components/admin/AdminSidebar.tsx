@@ -10,12 +10,14 @@ import {
   Home,
   Menu,
   X,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
+  { href: "/admin/content", label: "Site Content", icon: FileText },
 ];
 
 export default function AdminSidebar() {
