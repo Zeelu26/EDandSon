@@ -70,6 +70,7 @@ export default function AdminContentPage() {
       const res = await fetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ key, value }),
       });
       if (!res.ok) throw new Error("Save failed");

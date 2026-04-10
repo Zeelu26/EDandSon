@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET() {
   const supabase = createAdminClient();
@@ -19,13 +18,6 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const body = await req.json();
   const { key, value } = body;
 
@@ -39,6 +31,7 @@ export async function PUT(req: NextRequest) {
     .upsert({ key, value, updated_at: new Date().toISOString() });
 
   if (error) {
+    console.error("Content save error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

@@ -25,9 +25,29 @@ import {
   Star,
 } from "lucide-react";
 
+/* ── Types for Supabase content ── */
+interface SiteContent {
+  hero?: {
+    headline: string;
+    headlineAccent: string;
+    subheadline: string;
+    badge: string;
+  };
+  business?: {
+    name: string;
+    shortName: string;
+    phone: string[];
+    email: string;
+    hours: string;
+    hoursShort: string;
+    yearsInBusiness: string;
+    serviceAreasShort: string;
+    address: string;
+  };
+}
+
 /* ─────────────────────────────────────────────
    Auto-Shuffling Gallery Box
-   Two boxes that rotate through images on a timer
    ───────────────────────────────────────────── */
 function ShuffleBox({ images, interval, className }: { images: typeof PROJECTS; interval: number; className?: string }) {
   const [index, setIndex] = useState(0);
@@ -75,40 +95,54 @@ function ShuffleBox({ images, interval, className }: { images: typeof PROJECTS; 
 }
 
 /* ─── Hero ─── */
-function Hero() {
+function Hero({ content }: { content: SiteContent | null }) {
+  const hero = content?.hero;
+  const biz = content?.business;
+  const phone1 = biz?.phone?.[0] || BUSINESS.phone[0];
+  const badge = hero?.badge || `${BUSINESS.yearsInBusiness} Years of Excellence`;
+  const subheadline = hero?.subheadline || "Premium home remodeling in New Jersey. From kitchens and bathrooms to complete renovations\u2014delivered with precision, integrity, and an uncompromising eye for detail.";
+
+  const renderHeadline = () => {
+    const headline = hero?.headline || "Crafting Exceptional Living Spaces";
+    const accent = hero?.headlineAccent || "Exceptional";
+    const idx = headline.indexOf(accent);
+    if (idx === -1) return <>{headline}</>;
+    const before = headline.slice(0, idx);
+    const after = headline.slice(idx + accent.length);
+    return (
+      <>
+        {before}
+        <span className="gradient-text">{accent}</span>
+        {after}
+      </>
+    );
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center bg-charcoal overflow-hidden noise-overlay">
-      {/* Van image — landscape photo, fills hero, left side fades out */}
+    <section className="relative min-h-[700px] h-screen max-h-[900px] flex items-center bg-charcoal overflow-hidden noise-overlay">
       <div className="absolute inset-0">
         <div className="absolute inset-0" style={{
           maskImage: "linear-gradient(to right, transparent 0%, black 40%, black 100%)",
           WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 40%, black 100%)",
         }}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/hero-van.jpeg"
             alt="Ed & Son Home Improvements work van"
-            fill
-            className="object-cover object-center"
-            priority
-            quality={90}
-            sizes="100vw"
+            className="absolute inset-0 w-full h-full object-cover object-bottom"
           />
         </div>
-        {/* Slight darkening over the image so text on left is readable */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(to right, transparent 0%, rgba(26,26,26,0.3) 50%, rgba(26,26,26,0.15) 100%)",
         }} />
-        {/* Bottom fade to white for next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-10" style={{
+        <div className="absolute bottom-0 left-0 right-0 h-20" style={{
           background: "linear-gradient(to top, #ffffff, transparent)",
         }} />
-        {/* Top darkening for navbar */}
         <div className="absolute top-0 left-0 right-0 h-24" style={{
           background: "linear-gradient(to bottom, rgba(26,26,26,0.4), transparent)",
         }} />
       </div>
 
-      {/* Grid pattern overlay */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
         backgroundSize: "60px 60px",
@@ -120,7 +154,7 @@ function Hero() {
             <motion.div variants={fadeInUp} custom={0} className="mb-6">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 text-xs font-semibold tracking-[0.15em] uppercase text-gray-300" style={{ fontFamily: "var(--font-body)" }}>
                 <span className="w-2 h-2 bg-brand-red rounded-full" />
-                {BUSINESS.yearsInBusiness} Years of Excellence
+                {badge}
               </span>
             </motion.div>
 
@@ -129,10 +163,7 @@ function Hero() {
               custom={0.15}
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-[1.05]"
             >
-              Crafting{" "}
-              <span className="gradient-text">Exceptional</span>
-              <br />
-              Living Spaces
+              {renderHeadline()}
             </motion.h1>
 
             <motion.p
@@ -141,7 +172,7 @@ function Hero() {
               className="text-gray-300 text-lg lg:text-xl max-w-lg leading-relaxed mb-10"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Premium home remodeling in New Jersey. From kitchens and bathrooms to complete renovations—delivered with precision, integrity, and an uncompromising eye for detail.
+              {subheadline}
             </motion.p>
 
             <motion.div variants={fadeInUp} custom={0.4} className="flex flex-col sm:flex-row items-start gap-4 mb-14">
@@ -149,13 +180,12 @@ function Hero() {
                 Request a Free Quote
                 <ArrowRight size={16} />
               </Link>
-              <a href={`tel:${BUSINESS.phone[0].replace(/-/g, "")}`} className="btn-outline">
+              <a href={`tel:${phone1.replace(/-/g, "")}`} className="btn-outline">
                 <Phone size={16} />
-                {BUSINESS.phone[0]}
+                {phone1}
               </a>
             </motion.div>
 
-            {/* Trust row */}
             <motion.div variants={fadeInUp} custom={0.55} className="flex items-center gap-8 flex-wrap">
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
@@ -171,8 +201,6 @@ function Hero() {
           </motion.div>
         </div>
       </div>
-
-      {/* Bottom fade handled by overlay above */}
     </section>
   );
 }
@@ -252,12 +280,12 @@ function FeaturedServices() {
 /* ─── Why Choose Us ─── */
 function WhyChooseUs() {
   const reasons = [
-    { title: "Meticulous Attention to Detail", desc: "Every cut, every joint, every finish is held to the highest standard. We don't cut corners—we craft them." },
+    { title: "Meticulous Attention to Detail", desc: "Every cut, every joint, every finish is held to the highest standard. We don't cut corners\u2014we craft them." },
     { title: "Transparent Communication", desc: "You'll always know where your project stands. Clear timelines, honest pricing, and consistent updates from start to finish." },
     { title: "Quality Materials, Expert Install", desc: "We source premium materials and pair them with installation expertise that ensures lasting beauty and performance." },
     { title: "On-Time, On-Budget Delivery", desc: "We respect your time and investment. Our disciplined process keeps your project moving efficiently without sacrificing quality." },
     { title: "Personalized Design Guidance", desc: "Your vision drives every decision. We help refine your ideas into practical, stunning results tailored to your home." },
-    { title: "Full-Service Remodeling", desc: "Kitchens, bathrooms, additions, tile, painting, patios, and more—one trusted team for all your renovation needs." },
+    { title: "Full-Service Remodeling", desc: "Kitchens, bathrooms, additions, tile, painting, patios, and more\u2014one trusted team for all your renovation needs." },
   ];
 
   return (
@@ -269,7 +297,7 @@ function WhyChooseUs() {
         <SectionHeading
           label="Why Ed & Son"
           title="The Difference Is in the Details"
-          description="We don't just renovate homes. We create spaces that elevate how you live—with craftsmanship that stands the test of time."
+          description="We don't just renovate homes. We create spaces that elevate how you live\u2014with craftsmanship that stands the test of time."
           light
         />
         <motion.div
@@ -298,7 +326,6 @@ function WhyChooseUs() {
 
 /* ─── Gallery Preview with Auto-Shuffle ─── */
 function GalleryPreview() {
-  // Split projects into two groups for the two shuffle boxes
   const group1 = PROJECTS.filter((_, i) => i % 2 === 0);
   const group2 = PROJECTS.filter((_, i) => i % 2 === 1);
 
@@ -317,31 +344,25 @@ function GalleryPreview() {
           viewport={{ once: true, margin: "-60px" }}
           variants={staggerContainer}
         >
-          {/* Grid: 2 auto-shuffle boxes + static images */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[220px] lg:auto-rows-[280px]">
-            {/* Shuffle Box 1 — spans 2 rows on large */}
             <motion.div variants={staggerItem} className="col-span-1 lg:col-span-2 lg:row-span-2 relative">
               <ShuffleBox images={group1} interval={3500} className="w-full h-full" />
-              {/* Live indicator */}
               <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 bg-brand-red rounded-full animate-pulse" />
                 <span className="text-white text-[10px] font-semibold tracking-wider uppercase" style={{ fontFamily: "var(--font-body)" }}>Auto</span>
               </div>
             </motion.div>
 
-            {/* Static image 1 */}
             <motion.div variants={staggerItem} className="relative overflow-hidden group">
               <Image src={PROJECTS[0].image} alt={PROJECTS[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
 
-            {/* Static image 2 */}
             <motion.div variants={staggerItem} className="relative overflow-hidden group">
               <Image src={PROJECTS[1].image} alt={PROJECTS[1].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
 
-            {/* Shuffle Box 2 */}
             <motion.div variants={staggerItem} className="col-span-1 relative">
               <ShuffleBox images={group2} interval={4200} className="w-full h-full" />
               <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
@@ -350,7 +371,6 @@ function GalleryPreview() {
               </div>
             </motion.div>
 
-            {/* Static image 3 */}
             <motion.div variants={staggerItem} className="relative overflow-hidden group">
               <Image src={PROJECTS[3].image} alt={PROJECTS[3].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -402,12 +422,16 @@ function TestimonialsSection() {
 }
 
 /* ─── Contact Preview ─── */
-function ContactPreview() {
+function ContactPreview({ content }: { content: SiteContent | null }) {
+  const biz = content?.business;
+  const phones = biz?.phone || BUSINESS.phone;
+  const email = biz?.email || BUSINESS.email;
+  const hoursShort = biz?.hoursShort || BUSINESS.hoursShort;
+
   return (
     <section className="py-24 lg:py-32 bg-charcoal relative noise-overlay">
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16">
-          {/* Left info */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
             <motion.span variants={fadeInUp} custom={0} className="text-brand-red text-xs font-semibold tracking-[0.2em] uppercase mb-4 block" style={{ fontFamily: "var(--font-body)" }}>
               Get In Touch
@@ -421,7 +445,7 @@ function ContactPreview() {
             </motion.p>
 
             <motion.div variants={fadeInUp} custom={0.3} className="space-y-5">
-              {BUSINESS.phone.map((p) => (
+              {phones.map((p: string) => (
                 <a key={p} href={`tel:${p.replace(/-/g, "")}`} className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group" style={{ fontFamily: "var(--font-body)" }}>
                   <div className="w-12 h-12 bg-white/5 flex items-center justify-center group-hover:bg-brand-red/20 transition-colors">
                     <Phone size={18} className="text-brand-red" />
@@ -432,13 +456,13 @@ function ContactPreview() {
                   </div>
                 </a>
               ))}
-              <a href={`mailto:${BUSINESS.email}`} className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group" style={{ fontFamily: "var(--font-body)" }}>
+              <a href={`mailto:${email}`} className="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group" style={{ fontFamily: "var(--font-body)" }}>
                 <div className="w-12 h-12 bg-white/5 flex items-center justify-center group-hover:bg-brand-red/20 transition-colors">
                   <Mail size={18} className="text-brand-red" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email Us</p>
-                  <p className="text-lg font-semibold">{BUSINESS.email}</p>
+                  <p className="text-lg font-semibold">{email}</p>
                 </div>
               </a>
               <div className="flex items-center gap-4 text-gray-300" style={{ fontFamily: "var(--font-body)" }}>
@@ -447,13 +471,12 @@ function ContactPreview() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Business Hours</p>
-                  <p className="text-lg font-semibold">{BUSINESS.hoursShort}</p>
+                  <p className="text-lg font-semibold">{hoursShort}</p>
                 </div>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Right form */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -474,16 +497,25 @@ function ContactPreview() {
 
 /* ─── Page ─── */
 export default function HomePage() {
+  const [content, setContent] = useState<SiteContent | null>(null);
+
+  useEffect(() => {
+    fetch("/api/content")
+      .then((res) => res.json())
+      .then((data) => setContent(data))
+      .catch(() => {});
+  }, []);
+
   return (
     <>
-      <Hero />
+      <Hero content={content} />
       <TrustBar />
       <FeaturedServices />
       <WhyChooseUs />
       <GalleryPreview />
       <TestimonialsSection />
       <CTABlock />
-      <ContactPreview />
+      <ContactPreview content={content} />
     </>
   );
 }
