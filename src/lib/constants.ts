@@ -190,6 +190,7 @@ export const NAV_LINKS = [
   { href: "/projects", label: "Projects" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/track", label: "Track Quote" },
 ] as const;
 
 export const PROJECT_TYPES = [

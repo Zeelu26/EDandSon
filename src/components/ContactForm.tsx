@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROJECT_TYPES, BUSINESS } from "@/lib/constants";
-import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Send, CheckCircle, AlertCircle, Loader2, Hash, Copy, Check } from "lucide-react";
+import Link from "next/link";
 
 interface FormData {
   name: string;
@@ -11,7 +12,7 @@ interface FormData {
   email: string;
   projectType: string;
   message: string;
-  _honeypot: string; // spam trap
+  _honeypot: string;
 }
 
 const initial: FormData = {
@@ -27,6 +28,8 @@ export default function ContactForm() {
   const [form, setForm] = useState<FormData>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [trackingId, setTrackingId] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   const validate = (): boolean => {
     const e: typeof errors = {};
@@ -44,7 +47,6 @@ export default function ContactForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    // Honeypot check
     if (form._honeypot) return;
 
     setStatus("loading");
@@ -60,12 +62,21 @@ export default function ContactForm() {
           message: form.message,
         }),
       });
-      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setTrackingId(data.tracking_id || "");
       setStatus("success");
       setForm(initial);
     } catch {
       setStatus("error");
     }
+  };
+
+  const copyTrackingId = async () => {
+    if (!trackingId) return;
+    await navigator.clipboard.writeText(trackingId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const inputClass = (field: keyof FormData) =>
@@ -80,21 +91,49 @@ export default function ContactForm() {
           key="success"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-16 px-8"
+          className="text-center py-12 px-6"
         >
           <CheckCircle size={56} className="text-green-400 mx-auto mb-6" />
           <h3 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-display)" }}>
             Message Sent Successfully
           </h3>
-          <p className="text-gray-400 mb-8" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-gray-400 mb-6" style={{ fontFamily: "var(--font-body)" }}>
             Thank you for reaching out. We&apos;ll get back to you within one business day.
           </p>
-          <button
-            onClick={() => setStatus("idle")}
-            className="btn-primary"
-          >
-            Send Another Message
-          </button>
+
+          {trackingId && (
+            <div className="bg-white/5 border border-white/10 p-5 mb-6 inline-block">
+              <p className="text-gray-500 text-xs uppercase tracking-wider mb-2" style={{ fontFamily: "var(--font-body)" }}>
+                Your Tracking ID
+              </p>
+              <div className="flex items-center gap-3">
+                <Hash size={18} className="text-brand-red" />
+                <span className="text-white text-2xl font-mono font-bold tracking-widest">{trackingId}</span>
+                <button
+                  onClick={copyTrackingId}
+                  className="text-gray-400 hover:text-white transition-colors p-1"
+                  title="Copy tracking ID"
+                >
+                  {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+                </button>
+              </div>
+              <p className="text-gray-600 text-xs mt-2" style={{ fontFamily: "var(--font-body)" }}>
+                Save this ID to{" "}
+                <Link href="/track" className="text-brand-red hover:underline">
+                  track your request
+                </Link>
+              </p>
+            </div>
+          )}
+
+          <div>
+            <button
+              onClick={() => { setStatus("idle"); setTrackingId(""); }}
+              className="btn-primary"
+            >
+              Send Another Message
+            </button>
+          </div>
         </motion.div>
       ) : (
         <motion.form
@@ -105,7 +144,6 @@ export default function ContactForm() {
           noValidate
           className="space-y-5"
         >
-          {/* Honeypot — hidden from real users */}
           <input
             type="text"
             name="website"
