@@ -81,6 +81,16 @@ export default function Footer() {
                   Request a Quote
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy" className="text-gray-400 hover:text-brand-red transition-colors text-sm" style={{ fontFamily: "var(--font-body)" }}>
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-400 hover:text-brand-red transition-colors text-sm" style={{ fontFamily: "var(--font-body)" }}>
+                  Terms of Use
+                </Link>
+              </li>
             </ul>
           </div>
 
