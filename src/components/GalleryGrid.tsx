@@ -1,24 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROJECTS } from "@/lib/constants";
-import type { Project } from "@/lib/constants";
-import { Expand, X } from "lucide-react";
+import { Expand, X, Loader2 } from "lucide-react";
 
-const categories = ["All", ...Array.from(new Set(PROJECTS.map((p) => p.category)))];
+interface GalleryProject {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+}
 
 export default function GalleryGrid({ limit }: { limit?: number }) {
+  const [projects, setProjects] = useState<GalleryProject[]>([]);
+  const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("All");
-  const [lightbox, setLightbox] = useState<Project | null>(null);
+  const [lightbox, setLightbox] = useState<GalleryProject | null>(null);
 
-  const filtered = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === active);
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/projects");
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProjects(
+            data
+              .filter((p: any) => p.visible)
+              .map((p: any) => ({
+                id: p.id,
+                title: p.title,
+                category: p.category,
+                description: p.description || "",
+                image: p.image_url,
+              }))
+          );
+        } else {
+          setProjects(
+            PROJECTS.map((p) => ({
+              id: p.id,
+              title: p.title,
+              category: p.category,
+              description: p.description,
+              image: p.image,
+            }))
+          );
+        }
+      } catch {
+        setProjects(
+          PROJECTS.map((p) => ({
+            id: p.id,
+            title: p.title,
+            category: p.category,
+            description: p.description,
+            image: p.image,
+          }))
+        );
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category)))];
+  const filtered = active === "All" ? projects : projects.filter((p) => p.category === active);
   const items = limit ? filtered.slice(0, limit) : filtered;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 size={28} className="animate-spin text-brand-red" />
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Filters */}
       {!limit && (
         <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
           {categories.map((cat) => (
@@ -38,11 +97,7 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
         </div>
       )}
 
-      {/* Grid */}
-      <motion.div
-        layout
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-      >
+      <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <AnimatePresence mode="popLayout">
           {items.map((project) => (
             <motion.div
@@ -55,15 +110,13 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
               className="group relative aspect-[4/3] overflow-hidden cursor-pointer bg-charcoal-light"
               onClick={() => setLightbox(project)}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={project.image}
                 alt={project.title}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
 
-              {/* Hover overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
 
               <div className="absolute inset-x-0 bottom-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20">
@@ -83,7 +136,6 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
         </AnimatePresence>
       </motion.div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {lightbox && (
           <motion.div
@@ -102,13 +154,11 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative aspect-video">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={lightbox.image}
                   alt={lightbox.title}
-                  fill
-                  className="object-cover"
-                  sizes="90vw"
-                  quality={90}
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-6">

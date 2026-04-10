@@ -324,10 +324,35 @@ function WhyChooseUs() {
   );
 }
 
-/* ─── Gallery Preview with Auto-Shuffle ─── */
+/* ─── Gallery Preview — reads from Supabase ─── */
 function GalleryPreview() {
-  const group1 = PROJECTS.filter((_, i) => i % 2 === 0);
-  const group2 = PROJECTS.filter((_, i) => i % 2 === 1);
+  const [projects, setProjects] = useState<Array<{ id: string; title: string; category: string; image: string }>>([]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/projects");
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProjects(
+            data
+              .filter((p: any) => p.visible)
+              .map((p: any) => ({ id: p.id, title: p.title, category: p.category, image: p.image_url }))
+          );
+        } else {
+          setProjects(PROJECTS.map((p) => ({ id: p.id, title: p.title, category: p.category, image: p.image })));
+        }
+      } catch {
+        setProjects(PROJECTS.map((p) => ({ id: p.id, title: p.title, category: p.category, image: p.image })));
+      }
+    }
+    load();
+  }, []);
+
+  if (projects.length === 0) return null;
+
+  const group1 = projects.filter((_, i) => i % 2 === 0);
+  const group2 = projects.filter((_, i) => i % 2 === 1);
 
   return (
     <section className="py-24 lg:py-32 bg-white">
@@ -344,37 +369,26 @@ function GalleryPreview() {
           viewport={{ once: true, margin: "-60px" }}
           variants={staggerContainer}
         >
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[220px] lg:auto-rows-[280px]">
-            <motion.div variants={staggerItem} className="col-span-1 lg:col-span-2 lg:row-span-2 relative">
-              <ShuffleBox images={group1} interval={3500} className="w-full h-full" />
-              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 bg-brand-red rounded-full animate-pulse" />
-                <span className="text-white text-[10px] font-semibold tracking-wider uppercase" style={{ fontFamily: "var(--font-body)" }}>Auto</span>
-              </div>
-            </motion.div>
-
-            <motion.div variants={staggerItem} className="relative overflow-hidden group">
-              <Image src={PROJECTS[0].image} alt={PROJECTS[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
-
-            <motion.div variants={staggerItem} className="relative overflow-hidden group">
-              <Image src={PROJECTS[1].image} alt={PROJECTS[1].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
-
-            <motion.div variants={staggerItem} className="col-span-1 relative">
-              <ShuffleBox images={group2} interval={4200} className="w-full h-full" />
-              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 bg-brand-red rounded-full animate-pulse" />
-                <span className="text-white text-[10px] font-semibold tracking-wider uppercase" style={{ fontFamily: "var(--font-body)" }}>Auto</span>
-              </div>
-            </motion.div>
-
-            <motion.div variants={staggerItem} className="relative overflow-hidden group">
-              <Image src={PROJECTS[3].image} alt={PROJECTS[3].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[220px] lg:auto-rows-[280px]">
+            {projects.slice(0, 6).map((project, i) => (
+              <motion.div key={project.id} variants={staggerItem} className="relative overflow-hidden group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-10">
+                  <p className="text-brand-red text-[10px] font-semibold tracking-[0.15em] uppercase mb-0.5" style={{ fontFamily: "var(--font-body)" }}>
+                    {project.category}
+                  </p>
+                  <p className="text-white text-sm font-bold leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+                    {project.title}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
