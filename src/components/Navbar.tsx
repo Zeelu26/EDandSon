@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS, BUSINESS } from "@/lib/constants";
@@ -43,9 +44,14 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
             <Link href="/" className="relative z-10 flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-brand-red flex items-center justify-center text-white font-bold text-lg" style={{ fontFamily: "var(--font-display)" }}>
-                E
-              </div>
+              <Image
+                src="/images/logo.jpeg"
+                alt="Ed & Son Home Improvements"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+                priority
+              />
               <div className="flex flex-col">
                 <span className="text-white font-bold text-lg tracking-tight leading-none" style={{ fontFamily: "var(--font-display)" }}>
                   Ed & Son

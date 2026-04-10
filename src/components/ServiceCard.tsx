@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { staggerItem } from "@/lib/motion";
 import { ArrowRight } from "lucide-react";
@@ -7,16 +8,30 @@ import Link from "next/link";
 import type { Service } from "@/lib/constants";
 
 export default function ServiceCard({ service, index }: { service: Service; index: number }) {
+  // Check if image file exists (has a real path vs placeholder)
+  const hasImage = service.image && !service.image.includes("placeholder");
+
   return (
     <motion.div
       variants={staggerItem}
       className="group premium-card bg-white border border-gray-100 overflow-hidden"
     >
       {/* Image area */}
-      <div className="relative h-56 overflow-hidden image-placeholder">
+      <div className="relative h-56 overflow-hidden bg-charcoal-light">
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent z-10" />
-        <div className="absolute inset-0 bg-charcoal-light transition-transform duration-700 group-hover:scale-110" />
-        <span className="relative z-0 text-white/10 text-sm">{service.shortTitle}</span>
+        {hasImage ? (
+          <Image
+            src={service.image}
+            alt={service.title}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="absolute inset-0 image-placeholder">
+            <span className="text-white/10 text-sm">{service.shortTitle}</span>
+          </div>
+        )}
         {/* Number overlay */}
         <span
           className="absolute top-4 left-5 z-20 text-white/20 text-6xl font-bold leading-none"

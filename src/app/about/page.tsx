@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { fadeInUp, staggerContainer, staggerItem, slideInLeft, slideInRight } from "@/lib/motion";
 import { BUSINESS, TESTIMONIALS } from "@/lib/constants";
 import SectionHeading from "@/components/SectionHeading";
@@ -52,8 +53,14 @@ export default function AboutPage() {
               variants={slideInLeft}
               className="relative"
             >
-              <div className="aspect-[4/5] image-placeholder">
-                <span className="text-white/10 text-sm">Team Photo</span>
+              <div className="aspect-[4/5] relative overflow-hidden">
+                <Image
+                  src="/images/hero-van.jpg"
+                  alt="Ed & Son Home Improvements work van"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
               </div>
               <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-brand-red/15 -z-10" />
             </motion.div>

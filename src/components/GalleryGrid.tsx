@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROJECTS } from "@/lib/constants";
 import type { Project } from "@/lib/constants";
-import { Expand } from "lucide-react";
+import { Expand, X } from "lucide-react";
 
 const categories = ["All", ...Array.from(new Set(PROJECTS.map((p) => p.category)))];
 
@@ -54,10 +55,13 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
               className="group relative aspect-[4/3] overflow-hidden cursor-pointer bg-charcoal-light"
               onClick={() => setLightbox(project)}
             >
-              {/* Placeholder / image area */}
-              <div className="absolute inset-0 image-placeholder">
-                <span className="text-white/10 text-xs">{project.category}</span>
-              </div>
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
 
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
@@ -86,7 +90,7 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
             onClick={() => setLightbox(null)}
           >
             <motion.div
@@ -97,8 +101,15 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
               className="relative max-w-4xl w-full bg-charcoal overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="aspect-video image-placeholder">
-                <span className="text-white/10">{lightbox.title}</span>
+              <div className="relative aspect-video">
+                <Image
+                  src={lightbox.image}
+                  alt={lightbox.title}
+                  fill
+                  className="object-cover"
+                  sizes="90vw"
+                  quality={90}
+                />
               </div>
               <div className="p-6">
                 <p className="text-brand-red text-xs font-semibold tracking-[0.15em] uppercase mb-2" style={{ fontFamily: "var(--font-body)" }}>
@@ -113,9 +124,9 @@ export default function GalleryGrid({ limit }: { limit?: number }) {
               </div>
               <button
                 onClick={() => setLightbox(null)}
-                className="absolute top-4 right-4 w-10 h-10 bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors text-lg"
+                className="absolute top-4 right-4 w-10 h-10 bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
               >
-                &times;
+                <X size={18} />
               </button>
             </motion.div>
           </motion.div>

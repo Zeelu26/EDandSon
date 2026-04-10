@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BUSINESS, SERVICES, NAV_LINKS } from "@/lib/constants";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 
@@ -17,9 +18,13 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-brand-red flex items-center justify-center text-white font-bold text-lg" style={{ fontFamily: "var(--font-display)" }}>
-                E
-              </div>
+              <Image
+                src="/images/logo.jpeg"
+                alt="Ed & Son Home Improvements"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+              />
               <div>
                 <div className="font-bold text-lg tracking-tight" style={{ fontFamily: "var(--font-display)" }}>Ed & Son</div>
                 <div className="text-gray-500 text-[10px] tracking-[0.2em] uppercase" style={{ fontFamily: "var(--font-body)" }}>Home Improvements</div>

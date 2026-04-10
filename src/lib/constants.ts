@@ -41,7 +41,7 @@ export const SERVICES: Service[] = [
       "Backsplash & tile work",
       "Lighting & electrical upgrades",
     ],
-    image: "/images/projects/kitchen-1.jpg",
+    image: "/images/projects/vanity-1.jpg",
   },
   {
     slug: "bathrooms",
@@ -69,7 +69,7 @@ export const SERVICES: Service[] = [
       "Sunrooms & enclosed porches",
       "In-law suites",
     ],
-    image: "/images/projects/addition-1.jpg",
+    image: "/images/projects/tile-1.jpg",
   },
   {
     slug: "tile",
@@ -97,7 +97,7 @@ export const SERVICES: Service[] = [
       "Cabinet refinishing",
       "Surface preparation & repair",
     ],
-    image: "/images/projects/painting-1.jpg",
+    image: "/images/projects/shower-1.jpg",
   },
   {
     slug: "patios",
@@ -111,7 +111,7 @@ export const SERVICES: Service[] = [
       "Retaining walls",
       "Landscape hardscaping",
     ],
-    image: "/images/projects/patio-1.jpg",
+    image: "/images/projects/tile-2.jpg",
   },
   {
     slug: "sheetrock",
@@ -125,7 +125,7 @@ export const SERVICES: Service[] = [
       "Texture matching",
       "Finishing & taping",
     ],
-    image: "/images/projects/sheetrock-1.jpg",
+    image: "/images/projects/bathroom-2.jpg",
   },
   {
     slug: "garages",
@@ -139,7 +139,7 @@ export const SERVICES: Service[] = [
       "Flooring & finishing",
       "Insulation & climate control",
     ],
-    image: "/images/projects/garage-1.jpg",
+    image: "/images/projects/tile-3.jpg",
   },
 ];
 
@@ -152,18 +152,15 @@ export interface Project {
 }
 
 export const PROJECTS: Project[] = [
-  { id: "1", title: "Modern Kitchen Transformation", category: "Kitchens", image: "/images/projects/kitchen-1.jpg", description: "Complete kitchen remodel with custom white cabinetry and quartz countertops" },
-  { id: "2", title: "Spa-Inspired Master Bath", category: "Bathrooms", image: "/images/projects/bathroom-1.jpg", description: "Luxury master bathroom with walk-in shower and freestanding tub" },
-  { id: "3", title: "Open Concept Addition", category: "Additions", image: "/images/projects/addition-1.jpg", description: "Seamless family room addition with vaulted ceilings" },
-  { id: "4", title: "Herringbone Tile Entry", category: "Tile", image: "/images/projects/tile-1.jpg", description: "Custom herringbone marble tile installation in grand foyer" },
-  { id: "5", title: "Victorian Exterior Repaint", category: "Painting", image: "/images/projects/painting-1.jpg", description: "Full exterior repaint bringing new life to a classic home" },
-  { id: "6", title: "Bluestone Patio Retreat", category: "Patios", image: "/images/projects/patio-1.jpg", description: "Natural bluestone patio with built-in seating and fire pit area" },
-  { id: "7", title: "Farmhouse Kitchen Redesign", category: "Kitchens", image: "/images/projects/kitchen-2.jpg", description: "Warm farmhouse kitchen with butcher block island and open shelving" },
-  { id: "8", title: "Minimalist Guest Bath", category: "Bathrooms", image: "/images/projects/bathroom-2.jpg", description: "Clean modern guest bathroom with floating vanity and linear drain" },
-  { id: "9", title: "Two-Story Family Addition", category: "Additions", image: "/images/projects/addition-2.jpg", description: "Two-story addition with matching architectural details" },
-  { id: "10", title: "Garage-to-Studio Conversion", category: "Garages", image: "/images/projects/garage-1.jpg", description: "Full garage conversion into a finished studio workspace" },
-  { id: "11", title: "Subway Tile Bathroom", category: "Tile", image: "/images/projects/tile-2.jpg", description: "Classic subway tile bathroom surround with niche shelving" },
-  { id: "12", title: "Covered Patio Extension", category: "Patios", image: "/images/projects/patio-2.jpg", description: "Covered patio with cedar beams and integrated lighting" },
+  { id: "1", title: "Spa-Inspired Master Bath", category: "Bathrooms", image: "/images/projects/bathroom-1.jpg", description: "Luxury master bathroom with walk-in shower, hexagon tile floor, and freestanding soaking tub with matte black fixtures" },
+  { id: "2", title: "Marble Tub Surround", category: "Tile", image: "/images/projects/bathroom-2.jpg", description: "Elegant marble-look tile tub surround with matte black rain shower head and modern fixtures" },
+  { id: "3", title: "Freestanding Tub Suite", category: "Bathrooms", image: "/images/projects/bathroom-3.jpg", description: "Spacious bathroom featuring freestanding soaking tub on polished stone tile flooring" },
+  { id: "4", title: "Double Vanity Remodel", category: "Bathrooms", image: "/images/projects/vanity-1.jpg", description: "Custom double vanity with quartz countertop, matte black faucets, and industrial globe lighting" },
+  { id: "5", title: "Stacked Tile Walk-In Shower", category: "Tile", image: "/images/projects/tile-1.jpg", description: "Floor-to-ceiling vertical stacked tile with built-in bench and recessed niche" },
+  { id: "6", title: "Modern Glass Enclosure Shower", category: "Bathrooms", image: "/images/projects/shower-1.jpg", description: "Marble tile shower with barn-door glass enclosure, rain head, and black accent niche" },
+  { id: "7", title: "Dual-Tone Shower Suite", category: "Bathrooms", image: "/images/projects/shower-2.jpg", description: "Two-tone marble and linear tile shower with ceiling-mount rain head and glass sliding door" },
+  { id: "8", title: "Brick Pattern Tub Tile", category: "Tile", image: "/images/projects/tile-2.jpg", description: "Wood-look brick pattern tile surround with recessed storage niche" },
+  { id: "9", title: "Full Bathroom Tile Installation", category: "Tile", image: "/images/projects/tile-3.jpg", description: "Complete shower and floor tile installation with built-in bench seat and mosaic floor detail" },
 ];
 
 export const TESTIMONIALS = [

@@ -1,13 +1,14 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { fadeInUp, fadeIn, staggerContainer, staggerItem, slideInLeft, slideInRight } from "@/lib/motion";
-import { BUSINESS, SERVICES, TESTIMONIALS } from "@/lib/constants";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeInUp, fadeIn, staggerContainer, staggerItem } from "@/lib/motion";
+import { BUSINESS, SERVICES, PROJECTS, TESTIMONIALS } from "@/lib/constants";
 import SectionHeading from "@/components/SectionHeading";
 import ServiceCard from "@/components/ServiceCard";
 import TestimonialCard from "@/components/TestimonialCard";
-import GalleryGrid from "@/components/GalleryGrid";
 import CTABlock from "@/components/CTABlock";
 import ContactForm from "@/components/ContactForm";
 import {
@@ -24,18 +25,86 @@ import {
   Star,
 } from "lucide-react";
 
+/* ─────────────────────────────────────────────
+   Auto-Shuffling Gallery Box
+   Two boxes that rotate through images on a timer
+   ───────────────────────────────────────────── */
+function ShuffleBox({ images, interval, className }: { images: typeof PROJECTS; interval: number; className?: string }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, interval);
+    return () => clearInterval(timer);
+  }, [images.length, interval]);
+
+  const current = images[index];
+
+  return (
+    <div className={`relative overflow-hidden ${className ?? ""}`}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current.id}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={current.image}
+            alt={current.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 50vw, 33vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4 z-10">
+            <p className="text-brand-red text-[10px] font-semibold tracking-[0.15em] uppercase mb-0.5" style={{ fontFamily: "var(--font-body)" }}>
+              {current.category}
+            </p>
+            <p className="text-white text-sm font-bold leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+              {current.title}
+            </p>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 /* ─── Hero ─── */
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center bg-charcoal overflow-hidden noise-overlay">
-      {/* Background gradient */}
+      {/* Van image — landscape photo, fills hero, left side fades out */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal to-charcoal-light" />
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] opacity-[0.04]" style={{
-          background: "radial-gradient(circle, #9B1B1B 0%, transparent 70%)",
+        <div className="absolute inset-0" style={{
+          maskImage: "linear-gradient(to right, transparent 0%, black 40%, black 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 40%, black 100%)",
+        }}>
+          <Image
+            src="/images/hero-van.jpeg"
+            alt="Ed & Son Home Improvements work van"
+            fill
+            className="object-cover object-center"
+            priority
+            quality={90}
+            sizes="100vw"
+          />
+        </div>
+        {/* Slight darkening over the image so text on left is readable */}
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(to right, transparent 0%, rgba(26,26,26,0.3) 50%, rgba(26,26,26,0.15) 100%)",
         }} />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] opacity-[0.03]" style={{
-          background: "radial-gradient(circle, #C8A96E 0%, transparent 70%)",
+        {/* Bottom fade to white for next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-10" style={{
+          background: "linear-gradient(to top, #ffffff, transparent)",
+        }} />
+        {/* Top darkening for navbar */}
+        <div className="absolute top-0 left-0 right-0 h-24" style={{
+          background: "linear-gradient(to bottom, rgba(26,26,26,0.4), transparent)",
         }} />
       </div>
 
@@ -46,11 +115,10 @@ function Hero() {
       }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left content */}
+        <div className="max-w-2xl">
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeInUp} custom={0} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-xs font-semibold tracking-[0.15em] uppercase text-gray-400" style={{ fontFamily: "var(--font-body)" }}>
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 text-xs font-semibold tracking-[0.15em] uppercase text-gray-300" style={{ fontFamily: "var(--font-body)" }}>
                 <span className="w-2 h-2 bg-brand-red rounded-full" />
                 {BUSINESS.yearsInBusiness} Years of Excellence
               </span>
@@ -70,7 +138,7 @@ function Hero() {
             <motion.p
               variants={fadeInUp}
               custom={0.3}
-              className="text-gray-400 text-lg lg:text-xl max-w-lg leading-relaxed mb-10"
+              className="text-gray-300 text-lg lg:text-xl max-w-lg leading-relaxed mb-10"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Premium home remodeling in New Jersey. From kitchens and bathrooms to complete renovations—delivered with precision, integrity, and an uncompromising eye for detail.
@@ -93,38 +161,18 @@ function Hero() {
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={14} className="fill-gold text-gold" />
                 ))}
-                <span className="text-gray-400 text-xs ml-2" style={{ fontFamily: "var(--font-body)" }}>5.0 Rating</span>
+                <span className="text-gray-300 text-xs ml-2" style={{ fontFamily: "var(--font-body)" }}>5.0 Rating</span>
               </div>
               <div className="h-4 w-px bg-white/20 hidden sm:block" />
-              <span className="text-gray-400 text-xs" style={{ fontFamily: "var(--font-body)" }}>Licensed & Insured</span>
+              <span className="text-gray-300 text-xs" style={{ fontFamily: "var(--font-body)" }}>Licensed & Insured</span>
               <div className="h-4 w-px bg-white/20 hidden sm:block" />
-              <span className="text-gray-400 text-xs" style={{ fontFamily: "var(--font-body)" }}>Free Estimates</span>
+              <span className="text-gray-300 text-xs" style={{ fontFamily: "var(--font-body)" }}>Free Estimates</span>
             </motion.div>
-          </motion.div>
-
-          {/* Right — feature image placeholder */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, x: 40 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="hidden lg:block relative"
-          >
-            <div className="aspect-[4/5] image-placeholder relative overflow-hidden">
-              <span className="text-white/10 text-sm">Hero Image</span>
-              {/* Decorative border */}
-              <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-brand-red/20 -z-10" />
-            </div>
-            {/* Floating stat card */}
-            <div className="absolute -left-8 bottom-12 bg-white p-5 shadow-2xl">
-              <p className="text-3xl font-bold text-charcoal" style={{ fontFamily: "var(--font-display)" }}>10+</p>
-              <p className="text-gray-500 text-xs font-medium tracking-wide uppercase" style={{ fontFamily: "var(--font-body)" }}>Years in Business</p>
-            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+      {/* Bottom fade handled by overlay above */}
     </section>
   );
 }
@@ -248,8 +296,12 @@ function WhyChooseUs() {
   );
 }
 
-/* ─── Gallery Preview ─── */
+/* ─── Gallery Preview with Auto-Shuffle ─── */
 function GalleryPreview() {
+  // Split projects into two groups for the two shuffle boxes
+  const group1 = PROJECTS.filter((_, i) => i % 2 === 0);
+  const group2 = PROJECTS.filter((_, i) => i % 2 === 1);
+
   return (
     <section className="py-24 lg:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -258,7 +310,54 @@ function GalleryPreview() {
           title="Recent Projects"
           description="A curated selection of transformations that showcase our range, quality, and commitment to excellence."
         />
-        <GalleryGrid limit={6} />
+
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={staggerContainer}
+        >
+          {/* Grid: 2 auto-shuffle boxes + static images */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[220px] lg:auto-rows-[280px]">
+            {/* Shuffle Box 1 — spans 2 rows on large */}
+            <motion.div variants={staggerItem} className="col-span-1 lg:col-span-2 lg:row-span-2 relative">
+              <ShuffleBox images={group1} interval={3500} className="w-full h-full" />
+              {/* Live indicator */}
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 bg-brand-red rounded-full animate-pulse" />
+                <span className="text-white text-[10px] font-semibold tracking-wider uppercase" style={{ fontFamily: "var(--font-body)" }}>Auto</span>
+              </div>
+            </motion.div>
+
+            {/* Static image 1 */}
+            <motion.div variants={staggerItem} className="relative overflow-hidden group">
+              <Image src={PROJECTS[0].image} alt={PROJECTS[0].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.div>
+
+            {/* Static image 2 */}
+            <motion.div variants={staggerItem} className="relative overflow-hidden group">
+              <Image src={PROJECTS[1].image} alt={PROJECTS[1].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.div>
+
+            {/* Shuffle Box 2 */}
+            <motion.div variants={staggerItem} className="col-span-1 relative">
+              <ShuffleBox images={group2} interval={4200} className="w-full h-full" />
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 bg-brand-red rounded-full animate-pulse" />
+                <span className="text-white text-[10px] font-semibold tracking-wider uppercase" style={{ fontFamily: "var(--font-body)" }}>Auto</span>
+              </div>
+            </motion.div>
+
+            {/* Static image 3 */}
+            <motion.div variants={staggerItem} className="relative overflow-hidden group">
+              <Image src={PROJECTS[3].image} alt={PROJECTS[3].title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 50vw, 25vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.div>
+          </div>
+        </motion.div>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
