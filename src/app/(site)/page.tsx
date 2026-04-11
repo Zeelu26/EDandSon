@@ -10,6 +10,7 @@ import SectionHeading from "@/components/SectionHeading";
 import ServiceCard from "@/components/ServiceCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import CTABlock from "@/components/CTABlock";
+import ReviewSection from "@/components/ReviewSection";
 import ContactForm from "@/components/ContactForm";
 import {
   ArrowRight,
@@ -135,7 +136,7 @@ function Hero({ content }: { content: SiteContent | null }) {
         <div className="absolute inset-0" style={{
           background: "linear-gradient(to right, transparent 0%, rgba(26,26,26,0.3) 50%, rgba(26,26,26,0.15) 100%)",
         }} />
-        <div className="absolute bottom-0 left-0 right-0 h-20" style={{
+        <div className="absolute bottom-0 left-0 right-0 h-6" style={{
           background: "linear-gradient(to top, #ffffff, transparent)",
         }} />
         <div className="absolute top-0 left-0 right-0 h-24" style={{
@@ -527,7 +528,7 @@ export default function HomePage() {
       <FeaturedServices />
       <WhyChooseUs />
       <GalleryPreview />
-      <TestimonialsSection />
+      <ReviewSection />
       <CTABlock />
       <ContactPreview content={content} />
     </>

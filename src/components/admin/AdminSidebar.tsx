@@ -12,6 +12,7 @@ import {
   X,
   FileText,
   Image as ImageIcon,
+  Star,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,6 +21,7 @@ const links = [
   { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
   { href: "/admin/content", label: "Site Content", icon: FileText },
   { href: "/admin/gallery", label: "Gallery", icon: ImageIcon },
+  { href: "/admin/reviews", label: "Reviews", icon: Star },
 ];
 
 export default function AdminSidebar() {
