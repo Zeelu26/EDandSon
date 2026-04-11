@@ -30,6 +30,7 @@ export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [trackingId, setTrackingId] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   const validate = (): boolean => {
     const e: typeof errors = {};
@@ -222,10 +223,25 @@ export default function ContactForm() {
               Something went wrong. Please call us at {BUSINESS.phone[0]} or try again.
             </div>
           )}
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-brand-red"
+            />
+            <span className="text-gray-500 text-xs leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+              By submitting this form, I agree to the{" "}
+              <a href="/privacy" target="_blank" className="text-brand-red hover:underline">Privacy Policy</a>{" "}
+              and{" "}
+              <a href="/terms" target="_blank" className="text-brand-red hover:underline">Terms of Use</a>.
+              Submitted information is used only for responding to my inquiry and will be removed when no longer necessary.
+            </span>
+          </label>
 
           <button
             type="submit"
-            disabled={status === "loading"}
+            disabled={status === "loading" || !agreed}
             className="btn-primary w-full justify-center !py-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {status === "loading" ? (
